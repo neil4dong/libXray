@@ -22,6 +22,8 @@ class AppleGoMobileBuilder(Builder):
                 "ios,iossimulator,macos,maccatalyst",
                 "-iosversion",
                 "15.0",
+                "-tags",
+                "netgo",
             ]
         )
         if ret.returncode != 0:

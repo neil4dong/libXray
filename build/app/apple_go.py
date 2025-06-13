@@ -165,6 +165,8 @@ class AppleGoBuilder(Builder):
             "-s -w",
             f"-o={output_file}",
             "-buildmode=c-archive",
+            "-tags=netgo",
+            "-tags=static"
         ]
         os.chdir(self.lib_dir)
         print(cmd)
