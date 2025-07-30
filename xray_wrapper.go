@@ -135,3 +135,45 @@ func XrayVersion() string {
 	var response nodep.CallResponse[string]
 	return response.EncodeToBase64(xray.XrayVersion(), nil)
 }
+
+type RunXrayReturnInstanceIdResponse struct {
+	InstanceId int `json:"instanceId,omitempty"`
+}
+
+func RunXrayReturnInstanceId(base64Text string) string {
+	var response nodep.CallResponse[*RunXrayReturnInstanceIdResponse]
+	req, err := base64.StdEncoding.DecodeString(base64Text)
+	if err != nil {
+		return response.EncodeToBase64(nil, err)
+	}
+	var request RunXrayRequest
+	err = json.Unmarshal(req, &request)
+	if err != nil {
+		return response.EncodeToBase64(nil, err)
+	}
+	instanceId, err := xray.RunXrayReturnInstanceId(request.DatDir, request.ConfigPath)
+	return response.EncodeToBase64(&RunXrayReturnInstanceIdResponse{InstanceId: instanceId}, err)
+}
+
+type StopXrayByInstanceIdRequest struct {
+	InstanceId int `json:"instanceId,omitempty"`
+}
+
+func StopXrayByInstanceId(base64Text string) string {
+	var response nodep.CallResponse[string]
+	req, err := base64.StdEncoding.DecodeString(base64Text)
+	if err != nil {
+		return response.EncodeToBase64("", err)
+	}
+	var request StopXrayByInstanceIdRequest
+	err = json.Unmarshal(req, &request)
+	if err != nil {
+		return response.EncodeToBase64("", err)
+	}
+
+	err = xray.StopXrayByInstanceId(request.InstanceId)
+	if err != nil {
+		return response.EncodeToBase64("", err)
+	}
+	return response.EncodeToBase64("", nil)
+}

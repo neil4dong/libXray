@@ -66,3 +66,15 @@ func CGoStopXray() *C.char {
 func CGoXrayVersion() *C.char {
 	return C.CString(XrayVersion())
 }
+
+//export CGoRunXrayReturnInstanceId
+func CGoRunXrayReturnInstanceId(base64Text *C.char) *C.char {
+	text := C.GoString(base64Text)
+	return C.CString(RunXrayReturnInstanceId(text))
+}
+
+//export CGoStopXrayByInstanceId
+func CGoStopXrayByInstanceId(base64Text *C.char) *C.char {
+	text := C.GoString(base64Text)
+	return C.CString(StopXrayByInstanceId(text))
+}

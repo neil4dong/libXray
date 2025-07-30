@@ -1,8 +1,10 @@
 package xray
 
 import (
+	"errors"
 	"os"
 	"runtime/debug"
+	"sync"
 
 	"github.com/xtls/libxray/nodep"
 	"github.com/xtls/xray-core/common/cmdarg"
@@ -12,6 +14,12 @@ import (
 
 var (
 	coreServer *core.Instance
+	// int id
+	instanceId int = 1
+	// id -> core.Instance
+	coreInstanceMap = make(map[int]*core.Instance)
+	// 添加一个锁
+	mu sync.Mutex
 )
 
 func StartXray(configPath string) (*core.Instance, error) {
@@ -67,4 +75,46 @@ func StopXray() error {
 // Xray's version
 func XrayVersion() string {
 	return core.Version()
+}
+
+func RunXrayReturnInstanceId(datDir string, configPath string) (int, error) {
+	// 添加一个锁
+	mu.Lock()
+	defer mu.Unlock()
+
+	InitEnv(datDir)
+	nodep.InitForceFree()
+	instance, err := StartXray(configPath)
+	if err != nil {
+		return 0, err
+	}
+
+	if err = instance.Start(); err != nil {
+		return 0, err
+	}
+
+	coreInstanceMap[instanceId] = instance
+	instanceId++
+	return instanceId, nil
+}
+
+func StopXrayByInstanceId(instanceId int) error {
+
+	// 添加一个锁
+	mu.Lock()
+	defer mu.Unlock()
+
+	instance, ok := coreInstanceMap[instanceId]
+	if !ok {
+		return errors.New("instance not found")
+	}
+
+	if instance != nil {
+		err := instance.Close()
+		delete(coreInstanceMap, instanceId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
