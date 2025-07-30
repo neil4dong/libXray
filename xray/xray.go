@@ -93,9 +93,10 @@ func RunXrayReturnInstanceId(datDir string, configPath string) (int, error) {
 		return 0, err
 	}
 
-	coreInstanceMap[instanceId] = instance
+	usedInstanceId := instanceId
+	coreInstanceMap[usedInstanceId] = instance
 	instanceId++
-	return instanceId, nil
+	return usedInstanceId, nil
 }
 
 func StopXrayByInstanceId(instanceId int) error {
