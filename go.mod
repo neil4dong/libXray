@@ -1,13 +1,13 @@
 module github.com/xtls/libxray
 
-go 1.24.0
+go 1.25.1
 
 replace github.com/xtls/xray-core => ../Xray-core
 
 require (
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/xtls/xray-core v0.0.0-00010101000000-000000000000
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.8
 	gopkg.in/yaml.v3 v3.0.1
 )
 

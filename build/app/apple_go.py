@@ -102,26 +102,27 @@ class AppleGoBuilder(Builder):
 
     def build(self):
         self.before_build()
-        # build ios
-        self.build_targets(self.ios_targets)
-        self.merge_static_lib(
-            self.ios_targets[1].sdk,
-            [self.ios_targets[1].apple_arch, self.ios_targets[2].apple_arch],
-        )
-        # build macos
-        self.build_targets(self.macos_targets)
-        self.merge_static_lib(
-            self.macos_targets[0].sdk,
-            [self.macos_targets[0].apple_arch, self.macos_targets[1].apple_arch],
-        )
-        # build tvos
-        self.build_targets(self.tvos_targets)
-        self.merge_static_lib(
-            self.tvos_targets[1].sdk,
-            [self.tvos_targets[1].apple_arch, self.tvos_targets[2].apple_arch],
-        )
-
-        self.after_build()
+        try:
+            # build ios
+            self.build_targets(self.ios_targets)
+            self.merge_static_lib(
+                self.ios_targets[1].sdk,
+                [self.ios_targets[1].apple_arch, self.ios_targets[2].apple_arch],
+            )
+            # build macos
+            self.build_targets(self.macos_targets)
+            self.merge_static_lib(
+                self.macos_targets[0].sdk,
+                [self.macos_targets[0].apple_arch, self.macos_targets[1].apple_arch],
+            )
+            # build tvos
+            self.build_targets(self.tvos_targets)
+            self.merge_static_lib(
+                self.tvos_targets[1].sdk,
+                [self.tvos_targets[1].apple_arch, self.tvos_targets[2].apple_arch],
+            )
+        finally:
+            self.after_build()
 
         self.create_include_dir()
         self.create_framework()
@@ -158,11 +159,11 @@ class AppleGoBuilder(Builder):
         run_env["DARWIN_SDK"] = sdk
 
         cmd = [
-            "go",
+            "garble",
             "build",
             "-trimpath",
             "-ldflags",
-            "-s -w",
+            "-w",
             f"-o={output_file}",
             "-buildmode=c-archive",
             "-tags=netgo",
